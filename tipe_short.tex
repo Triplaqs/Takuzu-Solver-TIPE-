@@ -1,0 +1,137 @@
+\documentclass{beamer}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{lipsum}
+
+\usetheme{Warsaw}
+\author{Axel Pereyrol}
+\date{18/06/23}
+\parindent=0pt
+\begin{document}
+
+\title{Présentation TIPE}
+
+%--------------------------------------------------------------------------
+
+\section{Problématique}
+\begin{frame}
+\frametitle{Code correcteurs et Takuzu}
+
+
+\begin{itemize}
+\item \structure{Comment assurer un transfert de données sur un canal peu fiable tout en minimisant la quantité de données envoyé ?}
+\end{itemize}
+
+Lorsqu'on désire envoyer une information à une machine distante, il arrive que certaines données soient perdues/effacées.
+
+Pour remédier à cela, des codes correcteurs sont mis en place sur la machine distante, cette méthode est basée sur la redondance (une donnée envoyée plusieurs fois) afin de pouvoir détecter les erreurs et/ou les corriger.
+\newline
+
+
+
+\begin{minipage}[0.2\textheight]{\textwidth}
+\begin{columns}[T]
+\begin{column}{0.8\textwidth}
+\begin{itemize}
+\item \structure{But du TIPE} : poser une contrainte sur la forme d'envoie pour récupérer les données initiales de manière logique : 
+\end{itemize}
+Encodage de l'information sous forme de séquences de \structure{Takuzu} de tailles variables.
+\end{column}
+\begin{column}{0.2\textwidth}
+\centering
+\includegraphics[width=2.5cm]{/home/triplaqs/Documents/MP2I/TIPE/Img/takuzuex.png}
+\label{figure}{Un \structure{Takuzu}.}
+\end{column}
+\end{columns}
+\end{minipage}
+\newline
+\newline
+\newline
+
+\end{frame}
+
+
+%--------------------------------------------------------------------------
+
+\section{Démarche}
+\begin{frame} 
+\frametitle{Démarche}
+
+Les \structure{3 grandes contraintes} de mon sujet sont les suivantes :
+
+\begin{itemize}
+\item Encoder les données sous forme de Takuzu, malgré les règles imposées, tout en conservant leurs informations.
+\item Avoir l'unicité de la solution d'un Takuzu et sa CNS sur les cases dévoilées initialement.
+\item Savoir où se situent les pertes au sein d'une séquence de donnée.
+\end{itemize}
+
+Pour pouvoir continuer \structure{malgré ces contraintes}, voici les démarches imaginées :
+
+\begin{itemize}
+\item Commencer par une transformation manuelle sur des petites séquences, avant de trouver un moyen de l'automatiser.
+\item Trouver exhaustivement la CNS du nombre de cases initialement dévoilée pour obtenir l'unicité de la solution.
+\item Admettre la structure des données, et les pertes sous forment d'inconnu dans un premier temps.
+\end{itemize}
+\end{frame}
+
+%--------------------------------------------------------------------------
+
+\section{Commencement}
+\begin{frame}
+\frametitle{Le lancement}
+\begin{itemize}
+\item \structure{Encodage} :
+\end{itemize}
+Code Python qui transforme un image en matrice de triplets (R,G,B), puis en cette même matrice de triplets mais en binaire.
+Puis conversion en grilles de Takuzu manuellement (En cours d'encodage).
+\newline
+
+
+\begin{minipage}[0.2\textheight]{\textwidth}
+\begin{columns}[T]
+
+\begin{column}{0.65\textwidth}
+
+\begin{itemize}
+\item \structure{Résolution} :
+\end{itemize}
+
+Code C, code qui vérifie les 3 conditions du Takuzu (fonctionnelles).
+Code qui vérifie si des pertes ont eu lieu (pertes implémentées à -1).
+Code qui résoud la première condition (en cours de test).
+\end{column}
+
+\begin{column}{0.08\textwidth}
+\centering
+\includegraphics[width=1.5cm]{/home/triplaqs/Documents/MP2I/TIPE/Img/test1.png}
+\end{column}
+
+\begin{column}{0.08\textwidth}
+\centering
+\includegraphics[width=1.5cm]{/home/triplaqs/Documents/MP2I/TIPE/Img/test2.png}
+%\label{figure}{Un \structure{Takuzu}.}
+\end{column}
+
+\end{columns}
+\end{minipage}
+
+
+\begin{itemize}
+\item \structure{Preuve d'unicité} (sur une grille de taille raisonnable) :
+\end{itemize}
+Prévue ces vacances grace à un backtracking utilisant les fonctions implémentées en C.
+
+\end{frame}
+
+%--------------------------------------------------------------------------
+
+\end{document}
+
+%--------------------------------------------------------------------------
+
+%$\bullet$ \structure{Comment assurer un transfert de données sur un canal peu fiable tout en minimisant la quantité de données envoyé ?}
