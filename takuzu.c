@@ -149,6 +149,8 @@ bool is_loss(int ** grille, int n){
     return etat;
 }
 
+int cbn_loss(int ** grille, int n);
+
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
 //======================================= RÉSOLUTION ============================================
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -284,7 +286,7 @@ void test_verif_trait(){
     printf("PERTES : %d\n-----\n", is_loss(gril, n));
 }
 
-void test_resolution(){
+void test_resolution_c1(){
     int n=4;
     int ** gril = (int**)calloc(n, sizeof(int*));
     for(int i=0; i<n;i++){
@@ -299,16 +301,16 @@ void test_resolution(){
     gril[1][0]=0;
     gril[1][1]=1;
     gril[1][2]=0;
-    gril[1][3]=1;
+    gril[1][3]=-1;
     gril[2][0]=0;
     gril[2][1]=1;
-    gril[2][2]=1;
-    gril[2][3]=0;
-    gril[3][0]=1;
+    gril[2][2]=-1;
+    gril[2][3]=-1;
+    gril[3][0]=-1;
     gril[3][1]=0;
     gril[3][2]=0;
     gril[3][3]=1;
-    printf("is ok ? : %d", vrf_all(gril, n));
+    printf("is ok ? : %d\n\n", vrf_all(gril, n));
     affiche(gril, n, n);
     int c1col = res_c1_col(gril, n); //on associe TRUE ou FALSE s'il y a eu du changement 
     printf("\nI  I  I  I  I\n");
@@ -320,13 +322,22 @@ void test_resolution(){
     printf("V  V  V  V  V\n\n");
     affiche(gril, n, n);
     printf("\nchmt lig c1 : %d\n", c1lig);
+    int c1col2 = res_c1_col(gril, n);  
+    printf("\nI  I  I  I  I\n");
+    printf("V  V  V  V  V\n\n");
+    affiche(gril, n, n);
+    printf("\nchmt col c1 : %d\n", c1col2);
+    printf("is ok ? : %d\n", vrf_all(gril, n));
+    int c1col3 = res_c1_col(gril, n);  
+    int c1lig2 = res_c1_lig(gril, n);
+    printf("\nrappel des fonctions : changement ?\ncol c1 : %d\nlig c1 : %d\n\n-----\n", c1col3, c1lig2);
 }
 
 
 
 int main(){
     //test_verif_trait();
-    test_resolution();
+    test_resolution_c1();
     return 0;
 }
 
