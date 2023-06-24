@@ -22,6 +22,18 @@ void affiche(int** tab, int n, int p){
     }
 }
 
+void al(){
+    printf("\n");
+}
+
+void alt(){
+    printf("\n-----\n\n");
+}
+
+void tr(){
+    printf("\n-----\n");
+}
+
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
 //===================================== VÉRIFICATION ============================================
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -149,11 +161,50 @@ bool is_loss(int ** grille, int n){
     return etat;
 }
 
-int cbn_loss(int ** grille, int n);
+//renvoie le nombre de pertes sur une ligne (l = indice de la ligne sur la matrice)
+int cbn_loss_lig(int ** grille, int n, int l){
+    int cpt = 0;
+    for(int i =0; i<n; i++){
+        if( grille[l][i]==-1){
+            cpt++;
+        }
+    }
+    return cpt;
+}
+
+//renvoie le nombre de pertes sur une colone (c = indice de la colone sur la matrice)
+int cbn_loss_col(int ** grille, int n, int c){
+    int cpt = 0;
+    for(int i =0; i<n; i++){
+        if( grille[i][c]==-1){
+            cpt++;
+        }
+    }
+    return cpt;
+}
+
+int sum_lig(int ** grille, int n, int l){
+    int cpt=0;
+    for(int i=0; i<n; i++){
+        cpt=cpt+grille[l][i];
+    }
+    return cpt;
+}
+
+int sum_col(int ** grille, int n, int c){
+    int cpt=0;
+    for(int i=0; i<n; i++){
+        cpt=cpt+grille[i][c];
+    }
+    return cpt;
+}
+
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
 //======================================= RÉSOLUTION ============================================
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//     ----> C1 <-------
 
 // ici on renvoie si des modifications ont eu lieu ou non (si oui, true)
 bool res_c1_lig(int ** grille, int n){
@@ -206,7 +257,49 @@ bool res_c1_col(int ** grille, int n){
 }
 
 
+//     ----> C2 <-------
 
+bool res_c2_lig(int ** grille, int n){
+    bool etat = false;
+    for(int i =0; i<n; i++){
+        if (cbn_loss_lig(grille, n, i)==1){
+            for(int j=0; j<n; j++){
+                if(grille[i][j]==-1){
+                    if(sum_lig(grille, n, i)==((n/2)-2)){
+                        grille[i][j]=1;
+                        etat=true;
+                    }
+                    if(sum_lig(grille, n, i)==((n/2)-1)){
+                        grille[i][j]=0;
+                        etat=true;
+                    }
+                }
+            }
+        }   
+    }
+    return etat;
+}
+
+bool res_c2_col(int ** grille, int n){
+    bool etat = false;
+    for(int j =0; j<n; j++){
+        if (cbn_loss_col(grille, n, j)==1){
+            for(int i=0; i<n; i++){
+                if(grille[i][j]==-1){
+                    if(sum_col(grille, n, j)==((n/2)-2)){
+                        grille[i][j]=1;
+                        etat=true;
+                    }
+                    if(sum_col(grille, n, j)==((n/2)-1)){
+                        grille[i][j]=0;
+                        etat=true;
+                    }
+                }
+            }
+        }   
+    }
+    return etat;
+}
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
 //========================================= TESTS ===============================================
@@ -286,6 +379,66 @@ void test_verif_trait(){
     printf("PERTES : %d\n-----\n", is_loss(gril, n));
 }
 
+
+
+void test_traitement(){
+    int n=4;
+    int ** gril = (int**)calloc(n, sizeof(int*));
+    for(int i=0; i<n;i++){
+        gril[i]=(int*)calloc(n, sizeof(int));
+    }
+    printf("\n-----\nTESTS TRAITEMENT\n");
+    printf("-----\n");
+    gril[0][0]=1;
+    gril[0][1]=0;
+    gril[0][2]=1;
+    gril[0][3]=0;
+    gril[1][0]=0;
+    gril[1][1]=1;
+    gril[1][2]=0;
+    gril[1][3]=1;
+    gril[2][0]=0;
+    gril[2][1]=1;
+    gril[2][2]=1;
+    gril[2][3]=0;
+    gril[3][0]=1;
+    gril[3][1]=0;
+    gril[3][2]=0;
+    gril[3][3]=1;
+    affiche(gril, n, n);
+    tr();
+    printf("is okay ? : %d\n", vrf_all(gril, n));
+    printf("is loss ? : %d\n", is_loss(gril, n));
+    gril[1][3]=-1;
+    gril[2][2]=-1;
+    gril[2][3]=-1;
+    gril[3][0]=-1;
+    alt();
+    affiche(gril, n, n);
+    tr();
+    printf("is okay ? : %d\n", vrf_all(gril, n));
+    printf("is loss ? : %d\n", is_loss(gril, n));
+    alt();
+    for(int i=0; i<4; i++){
+        printf("lig %d got %d loss. \n", i, cbn_loss_lig(gril, n, i));
+    }
+    tr();
+    for(int i=0; i<4; i++){
+        printf("col %d got %d loss. \n", i, cbn_loss_col(gril, n, i));
+    }
+    alt();
+     for(int i=0; i<n; i++){
+        printf("somme lignes %d : %d\n", i, sum_lig(gril, n, i));
+    }
+    tr();
+    for(int i=0; i<n; i++){
+        printf("somme colones %d : %d\n", i, sum_col(gril, n, i));
+    }
+    alt();
+}
+
+
+
 void test_resolution_c1(){
     int n=4;
     int ** gril = (int**)calloc(n, sizeof(int*));
@@ -312,7 +465,8 @@ void test_resolution_c1(){
     gril[3][3]=1;
     printf("is ok ? : %d\n\n", vrf_all(gril, n));
     affiche(gril, n, n);
-    int c1col = res_c1_col(gril, n); //on associe TRUE ou FALSE s'il y a eu du changement 
+    int c1col = res_c1_col(gril, n); //on associe TRUE ou FALSE s'il y a eu du changement
+
     printf("\nI  I  I  I  I\n");
     printf("V  V  V  V  V\n\n");
     affiche(gril, n, n);
@@ -334,10 +488,61 @@ void test_resolution_c1(){
 }
 
 
+void test_resolution_c2(){
+    int n=4;
+    int ** gril = (int**)calloc(n, sizeof(int*));
+    for(int i=0; i<n;i++){
+        gril[i]=(int*)calloc(n, sizeof(int));
+    }
+    printf("\n-----\nTESTS RÉSOLUTION\n");
+    printf("-----\n");
+    gril[0][0]=1;
+    gril[0][1]=0;
+    gril[0][2]=1;
+    gril[0][3]=0;
+    gril[1][0]=0;
+    gril[1][1]=1;
+    gril[1][2]=0;
+    gril[1][3]=-1;
+    gril[2][0]=0;
+    gril[2][1]=1;
+    gril[2][2]=-1;
+    gril[2][3]=-1;
+    gril[3][0]=-1;
+    gril[3][1]=0;
+    gril[3][2]=0;
+    gril[3][3]=1;
+    printf("is ok ? : %d\n\n", vrf_all(gril, n));
+    affiche(gril, n, n);
+    int c2col = res_c2_col(gril, n); //on associe TRUE ou FALSE s'il y a eu du changement
+
+    printf("\nI  I  I  I  I\n");
+    printf("V  V  V  V  V\n\n");
+    affiche(gril, n, n);
+    printf("\nchmt col c2 : %d\n", c2col);
+    int c2lig = res_c2_lig(gril, n); //idem
+    printf("\nI  I  I  I  I\n");
+    printf("V  V  V  V  V\n\n");
+    affiche(gril, n, n);
+    printf("\nchmt lig c2 : %d\n", c2lig);
+    int c2col2 = res_c2_col(gril, n);  
+    printf("\nI  I  I  I  I\n");
+    printf("V  V  V  V  V\n\n");
+    affiche(gril, n, n);
+    printf("\nchmt col c2 : %d\n", c2col2);
+    printf("is ok ? : %d\n", vrf_all(gril, n));
+    int c2col3 = res_c2_col(gril, n);  
+    int c2lig2 = res_c2_lig(gril, n);
+    printf("\nrappel des fonctions : changement ?\ncol c1 : %d\nlig c1 : %d\n\n-----\n", c2col3, c2lig2);
+   
+}
+
 
 int main(){
-    //test_verif_trait();
-    test_resolution_c1();
+    //test_verif_trait();      //validé
+    //test_traitement();      //validé
+    //test_resolution_c1();  //validé
+    test_resolution_c2();
     return 0;
 }
 
