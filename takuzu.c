@@ -199,10 +199,28 @@ int sum_col(int ** grille, int n, int c){
     return cpt;
 }
 
+//renvoie false s'il existe, false sinon
+int is_lig_ex(int ** grille, int n, int * lig){
+    for(int i= 0; i<n; i++){
+        for(int j =0; j<n; j++){
+            bool exit=true;
+            if(!(grille[i][j]==lig[j])){
+                exit=false;
+                break;
+            }         
+        }
+        if(exit){
+           return false; 
+        }
+    }
+    return true;
+}
+
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
 //======================================= RÉSOLUTION ============================================
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 
 //     ----> C1 <-------
 
@@ -259,6 +277,7 @@ bool res_c1_col(int ** grille, int n){
 
 //     ----> C2 <-------
 
+
 bool res_c2_lig(int ** grille, int n){
     bool etat = false;
     for(int i =0; i<n; i++){
@@ -300,6 +319,35 @@ bool res_c2_col(int ** grille, int n){
     }
     return etat;
 }
+
+//     ----> C3 <-------
+
+bool res_c3_lig(int ** grille, int n){
+    bool etat = false;
+    for(int i =0; i<n; i++){
+        if (cbn_loss_lig(grille, n, i)==2){
+            int * liga=(int*)calloc(n, sizeof(int));
+            int * ligb=(int*)calloc(n, sizeof(int));
+            int cpt=0;
+            for(int j=0; j<n; j++){
+                if(grille[i][j]==-1){
+                    if(cpt==0){
+                        liga[j]=1;
+                        ligb[j]=0;
+                        etat=true;
+                    }
+                    if(cpt==1){
+                        liga[j]=0;
+                        ligb[j]=1;
+                        etat=true;
+                    }
+                }
+            }
+        }   
+    }
+    return etat;
+}
+
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
 //========================================= TESTS ===============================================
@@ -435,6 +483,10 @@ void test_traitement(){
         printf("somme colones %d : %d\n", i, sum_col(gril, n, i));
     }
     alt();
+    
+    printf("is lig [1,0,1,0] in ? : %d\n", is_lig_ex(gril, n, [1; 0; 1; 0]));
+    printf("is lig [1,0,0,1] in ? : %d\n", is_lig_ex(gril, n, [1; 0; 0; 1]));
+    alt();
 }
 
 
@@ -445,7 +497,7 @@ void test_resolution_c1(){
     for(int i=0; i<n;i++){
         gril[i]=(int*)calloc(n, sizeof(int));
     }
-    printf("\n-----\nTESTS RÉSOLUTION\n");
+    printf("\n-----\nTESTS RÉSOLUTION C1\n");
     printf("-----\n");
     gril[0][0]=1;
     gril[0][1]=0;
@@ -466,7 +518,6 @@ void test_resolution_c1(){
     printf("is ok ? : %d\n\n", vrf_all(gril, n));
     affiche(gril, n, n);
     int c1col = res_c1_col(gril, n); //on associe TRUE ou FALSE s'il y a eu du changement
-
     printf("\nI  I  I  I  I\n");
     printf("V  V  V  V  V\n\n");
     affiche(gril, n, n);
@@ -494,7 +545,7 @@ void test_resolution_c2(){
     for(int i=0; i<n;i++){
         gril[i]=(int*)calloc(n, sizeof(int));
     }
-    printf("\n-----\nTESTS RÉSOLUTION\n");
+    printf("\n-----\nTESTS RÉSOLUTION C2\n");
     printf("-----\n");
     gril[0][0]=1;
     gril[0][1]=0;
@@ -537,12 +588,39 @@ void test_resolution_c2(){
    
 }
 
+void test_resolution_c3(){
+    int n=4;
+    int ** gril = (int**)calloc(n, sizeof(int*));
+    for(int i=0; i<n;i++){
+        gril[i]=(int*)calloc(n, sizeof(int));
+    }
+    printf("\n-----\nTESTS RÉSOLUTION C3\n");
+    printf("-----\n");
+    gril[0][0]=1;
+    gril[0][1]=0;
+    gril[0][2]=1;
+    gril[0][3]=0;
+    gril[1][0]=0;
+    gril[1][1]=1;
+    gril[1][2]=0;
+    gril[1][3]=-1;
+    gril[2][0]=0;
+    gril[2][1]=1;
+    gril[2][2]=-1;
+    gril[2][3]=-1;
+    gril[3][0]=-1;
+    gril[3][1]=0;
+    gril[3][2]=0;
+    gril[3][3]=1;
+}
+
 
 int main(){
-    //test_verif_trait();      //validé
-    //test_traitement();      //validé
-    //test_resolution_c1();  //validé
-    test_resolution_c2();
+    //test_verif_trait();       //validé
+    test_traitement();       //validé
+    //test_resolution_c1();   //validé
+    //test_resolution_c2();  //validé
+    test_resolution_c3();
     return 0;
 }
 
