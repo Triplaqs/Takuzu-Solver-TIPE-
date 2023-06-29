@@ -13,13 +13,33 @@ SINON : FALSE
 /*/
 
 // AFFICHAGE
-void affiche(int** tab, int n, int p){
+void _affiche(int** tab, int n, int p){ //un affichage increvable non-esthétique de secours
     for(int i=0; i < n; i++){ 
         printf("[");
         for(int j = 0; j < p; j++){
             printf("%d ;", tab[i][j]);
         }
         printf("]\n");
+    }
+}
+
+void affiche(int** tab, int n, int p){ //un affichage plus capricieux mais plus adapté visuellement à l'usage de ce fichier
+    for(int i=0; i < n; i++){ 
+        printf("[");
+        for(int j = 0; j < p-1; j++){
+            if(tab[i][j]!=-1){
+                printf(" %d ;", tab[i][j]);
+            }
+            else{
+                printf("%d ;", tab[i][j]);
+            }
+        }
+        if(tab[i][p-1]!=-1){
+                printf(" %d ]\n", tab[i][p-1]);
+            }
+            else{
+                printf("%d ]\n", tab[i][p-1]);
+            }
     }
 }
 
@@ -493,6 +513,23 @@ bool res_c3_col(int ** grille, int n){
     return etat;
 }
 
+bool res_all(int**grille, int n){
+    bool res = false;
+    res=res||(res_c1_col(grille, n));
+    res=res||(res_c1_lig(grille, n));
+    res=res||(res_c2_col(grille, n));
+    res=res||(res_c2_lig(grille, n));
+    res=res||(res_c3_col(grille, n));
+    res=res||(res_c3_lig(grille, n));
+    return res;
+}
+
+void resolve(int ** grille, int n){
+    bool is=true;
+    while(is){
+        is=res_all(grille, n);
+    }
+}
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
 //========================================= TESTS ===============================================
@@ -791,7 +828,105 @@ void test_resolution_c3(){
     printf("V  V  V  V  V\n\n");
     affiche(gril, n, n);
     printf("\nchmt col c3 : %d\n", c3col);
+    al();
+    printf("is ok ? : %d\n", vrf_all(gril, n));
+    alt();
 }
+
+void test_resolution(){
+    int n=4;
+    int ** gril = (int**)calloc(n, sizeof(int*));
+    for(int i=0; i<n;i++){
+        gril[i]=(int*)calloc(n, sizeof(int));
+    }
+    printf("\n-----\nTESTS RÉSOLUTION\n");
+    printf("-----\n");
+    al();
+    gril[0][0]=1;
+    gril[0][1]=0;
+    gril[0][2]=-1;
+    gril[0][3]=-1;
+    gril[1][0]=-1;
+    gril[1][1]=1;
+    gril[1][2]=-1;
+    gril[1][3]=0;
+    gril[2][0]=1;
+    gril[2][1]=-1;
+    gril[2][2]=0;
+    gril[2][3]=1;
+    gril[3][0]=-1;
+    gril[3][1]=-1;
+    gril[3][2]=0;
+    gril[3][3]=-1;
+    affiche(gril, n, n);
+    al();
+    resolve(gril, n); 
+    printf("\nI  I  I  I  I\n");
+    printf("V  V  V  V  V\n\n");
+    affiche(gril, n, n);
+    al();
+    printf("is ok ? : %d\n", vrf_all(gril, n));
+    alt();
+}
+
+void exemple(){
+    int n=6;
+    int ** gril = (int**)calloc(n, sizeof(int*));
+    for(int i=0; i<n;i++){
+        gril[i]=(int*)calloc(n, sizeof(int));
+    }
+    printf("\n-----\nEXEMPLE\n");
+    printf("-----\n");
+    al();
+    //ligne 1
+    gril[0][0]=-1;
+    gril[0][1]=1;
+    gril[0][2]=-1;
+    gril[0][3]=0;
+    gril[0][4]=-1;
+    gril[0][5]=-1;
+    //ligne 2
+    gril[1][0]=-1;
+    gril[1][1]=-1;
+    gril[1][2]=-1;
+    gril[1][3]=-1;
+    gril[1][4]=-1;
+    gril[1][5]=-1;
+    //ligne 3
+    gril[2][0]=-1;
+    gril[2][1]=-1;
+    gril[2][2]=-1;
+    gril[2][3]=0;
+    gril[2][4]=1;
+    gril[2][5]=-1;
+    //ligne 4
+    gril[3][0]=-1;
+    gril[3][1]=-1;
+    gril[3][2]=-1;
+    gril[3][3]=1;
+    gril[3][4]=-1;
+    gril[3][5]=-1;
+    //ligne 5
+    gril[4][0]=-1;
+    gril[4][1]=0;
+    gril[4][2]=1;
+    gril[4][3]=-1;
+    gril[4][4]=-1;
+    gril[4][5]=0;
+    //ligne 6
+    gril[5][0]=-1;
+    gril[5][1]=1;
+    gril[5][2]=1;
+    gril[5][3]=-1;
+    gril[5][4]=-1;
+    gril[5][5]=0;
+    affiche(gril, n, n);
+    resolve(gril, n);
+    printf("\nI  I  I  I  I\n");
+    printf("V  V  V  V  V\n\n");
+    affiche(gril, n, n);
+}
+
 
 
 int main(){
@@ -799,7 +934,9 @@ int main(){
     //test_traitement();       //validé
     //test_resolution_c1();   //validé
     //test_resolution_c2();  //validé
-    test_resolution_c3();
+    //test_resolution_c3(); //validé
+    //test_resolution();   //validé
+    exemple();
     return 0;
 }
 
