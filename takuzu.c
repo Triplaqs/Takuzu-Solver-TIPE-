@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <assert.h>
 
 /*/
 (c1) : Pas plus de 2 elements identiques adjacents
@@ -191,6 +192,14 @@ int sum_lig(int ** grille, int n, int l){
     return cpt;
 }
 
+int sum_lis_ptr(int * l, int n){
+    int cpt=0;
+    for(int i=0; i<n; i++){
+        cpt=cpt+l[i];
+    }
+    return cpt;
+}
+
 int sum_col(int ** grille, int n, int c){
     int cpt=0;
     for(int i=0; i<n; i++){
@@ -200,20 +209,34 @@ int sum_col(int ** grille, int n, int c){
 }
 
 //renvoie false s'il existe, false sinon
-int is_lig_ex(int ** grille, int n, int * lig){
+bool is_lig_ex(int ** grille, int n, int * lig){
+    bool etat=false;
     for(int i= 0; i<n; i++){
+        bool exit=true;
         for(int j =0; j<n; j++){
-            bool exit=true;
             if(!(grille[i][j]==lig[j])){
                 exit=false;
                 break;
             }         
         }
-        if(exit){
-           return false; 
-        }
+        etat=etat||exit;
     }
-    return true;
+    return etat;
+}
+
+bool is_col_ex(int ** grille, int n, int * lig){
+    bool etat=false;
+    for(int i= 0; i<n; i++){
+        bool exit=true;
+        for(int j =0; j<n; j++){
+            if(!(grille[j][i]==lig[j])){
+                exit=false;
+                break;
+            }         
+        }
+        etat=etat||exit;
+    }
+    return etat;
 }
 
 
@@ -325,23 +348,145 @@ bool res_c2_col(int ** grille, int n){
 bool res_c3_lig(int ** grille, int n){
     bool etat = false;
     for(int i =0; i<n; i++){
-        if (cbn_loss_lig(grille, n, i)==2){
+        if (cbn_loss_lig(grille, n, i)==2){ //filtrage des lignes avec uniquement 2 pertes
+            //printf("arrive -> ind %d\n", i);
             int * liga=(int*)calloc(n, sizeof(int));
             int * ligb=(int*)calloc(n, sizeof(int));
             int cpt=0;
+            int * inda=(int*)calloc(n, sizeof(int));
+            int * indb = (int*)calloc(n, sizeof(int));
             for(int j=0; j<n; j++){
-                if(grille[i][j]==-1){
-                    if(cpt==0){
-                        liga[j]=1;
-                        ligb[j]=0;
-                        etat=true;
-                    }
+                if(grille[i][j]==-1){ //essayage des 2 combinaisons possibles
+                    assert(cpt!=2);
                     if(cpt==1){
+                        //printf("inda : %d\n", *inda);
                         liga[j]=0;
                         ligb[j]=1;
-                        etat=true;
+                        int b = j;
+                        *indb=b;
+                        cpt++;
+                        //printf("assignation b à %d (indb : %d)\n", j, *indb);
+                        //printf("inda : %d\n", *inda);
+                    }
+                    else if(cpt==0){
+                        liga[j]=1;
+                        ligb[j]=0;
+                        int a = j;
+                        *inda=a;
+                        cpt++;
+                        //printf("assignation a à %d (inda : %d)\n", j, *inda);
                     }
                 }
+                else{
+                    liga[j]=grille[i][j];
+                    ligb[j]=grille[i][j];
+                }
+                //printf("inda : %d\nindb : %d\ncpt : %d\n", *inda, *indb, cpt);
+            }
+            /*int ** mata = (int **)calloc(1, sizeof(int*));
+            mata[0]=liga;
+            int ** matb = (int **)calloc(1, sizeof(int*));
+            matb[0]=ligb;
+            affiche(mata, 1, n);
+            affiche(matb, 1, n);*/
+            //printf("inda : %d\nindb : %d\ncpt : %d\n", *inda, *indb, cpt);
+            if(sum_lis_ptr(liga, n)!=n/2){ //verification qu'il manque bien un 1 et un 0, sinon, la C2 fera l'affaire 
+                //printf("IF 1\n");
+                break;
+            }
+            if(!(is_lig_ex(grille, n, liga))&&!(is_lig_ex(grille, n, ligb))){ //si les 2 ne sont pas dans la grille, on a pas plus d'Info, on abandonne
+                //printf("IF 2\n");
+                break;
+            }
+            assert(is_lig_ex(grille, n, liga)!=is_lig_ex(grille, n, ligb)); //si les 2 sont dans la grille, on a un problème, la bonne solution devrait être parmis les 2.
+            
+            if((is_lig_ex(grille, n, liga))&&!(is_lig_ex(grille, n, ligb))){  //si la première ligne est déjà dedans et pas la 2ème, alors la 2ème est solution
+                grille[i][*inda]=0;
+                grille[i][*indb]=1;
+                etat=true;
+                //printf("ISSUE 1\n");
+            }
+            if(!(is_lig_ex(grille, n, liga))&&(is_lig_ex(grille, n, ligb))){  //et inversement
+                grille[i][*inda]=1;
+                grille[i][*indb]=0;
+                etat=true;
+                //printf("ISSUE 2\n");
+            }
+        }   
+    }
+    return etat;
+}
+
+bool res_c3_col(int ** grille, int n){
+    bool etat = false;
+    for(int i =0; i<n; i++){
+        if (cbn_loss_col(grille, n, i)==2){ //filtrage des lignes avec uniquement 2 pertes
+            //printf("arrive -> ind %d\n", i);
+            int * cola=(int*)calloc(n, sizeof(int));
+            int * colb=(int*)calloc(n, sizeof(int));
+            int cpt=0;
+            int * inda=(int*)calloc(n, sizeof(int));
+            int * indb = (int*)calloc(n, sizeof(int));
+            for(int j=0; j<n; j++){
+                if(grille[j][i]==-1){ //essayage des 2 combinaisons possibles
+                    assert(cpt!=2);
+                    if(cpt==1){
+                        //printf("inda : %d\n", *inda);
+                        cola[j]=0;
+                        colb[j]=1;
+                        int b = j;
+                        *indb=b;
+                        cpt++;
+                        //printf("assignation b à %d (indb : %d)\n", j, *indb);
+                        //printf("inda : %d\n", *inda);
+                    }
+                    else if(cpt==0){
+                        cola[j]=1;
+                        colb[j]=0;
+                        int a = j;
+                        *inda=a;
+                        cpt++;
+                        //printf("assignation a à %d (inda : %d)\n", j, *inda);
+                    }
+                }
+                else{
+                    cola[j]=grille[j][i];
+                    colb[j]=grille[j][i];
+                }
+                //printf("inda : %d\nindb : %d\ncpt : %d\n", *inda, *indb, cpt);
+            }
+            /*int ** mata = (int **)calloc(n, sizeof(int*));
+            int ** matb = (int **)calloc(n, sizeof(int*));
+            for(int k =0; k<n; k++){
+                mata[k]=(int *)calloc(1, sizeof(int));
+                matb[k]=(int *)calloc(1, sizeof(int));
+                mata[k][0]=cola[k];
+                matb[k][0]=colb[k];
+            }
+            affiche(mata, n, 1);
+            affiche(matb, n, 1);*/
+            //printf("inda : %d\nindb : %d\ncpt : %d\n", *inda, *indb, cpt);
+            if(sum_lis_ptr(cola, n)!=n/2){ //verification qu'il manque bien un 1 et un 0, sinon, la C2 fera l'affaire 
+                //printf("IF 1\n");
+                break;
+            }
+            if(!(is_col_ex(grille, n, cola))&&!(is_col_ex(grille, n, colb))){ //si les 2 ne sont pas dans la grille, on a pas plus d'Info, on abandonne
+                //printf("IF 2\n");
+                break;
+            }
+            assert(is_col_ex(grille, n, cola)!=is_col_ex(grille, n, colb)); //si les 2 sont dans la grille, on a un problème, la bonne solution devrait être parmis les 2.
+            
+            if((is_col_ex(grille, n, cola))&&!(is_col_ex(grille, n, colb))){  //si la première ligne est déjà dedans et pas la 2ème, alors la 2ème est solution
+                grille[*inda][i]=0;
+                grille[*indb][i]=1;
+                etat=true;
+                //printf("ISSUE 1\n");
+            }
+            if(!(is_col_ex(grille, n, cola))&&(is_col_ex(grille, n, colb))){  //et inversement
+                grille[*inda][i]=1;
+                grille[*indb][i]=0;
+                etat=true;
+                //printf("ISSUE 2\n");
             }
         }   
     }
@@ -483,9 +628,19 @@ void test_traitement(){
         printf("somme colones %d : %d\n", i, sum_col(gril, n, i));
     }
     alt();
-    
-    printf("is lig [1,0,1,0] in ? : %d\n", is_lig_ex(gril, n, [1; 0; 1; 0]));
-    printf("is lig [1,0,0,1] in ? : %d\n", is_lig_ex(gril, n, [1; 0; 0; 1]));
+    int * l1 = (int *)calloc(4, sizeof(int));
+    int * l2 = (int *)calloc(4, sizeof(int));
+    l1[0]=1; l1[1]=0; l1[2]=1; l1[3]=0;
+    l2[0]=1; l2[1]=0; l2[2]=0; l2[3]=1;
+    printf("is lig [1,0,1,0] in ? : %d\n", is_lig_ex(gril, n, l1));
+    printf("is lig [1,0,0,1] in ? : %d\n", is_lig_ex(gril, n, l2));
+    alt();
+    int * c1 = (int *)calloc(4, sizeof(int));
+    int * c2 = (int *)calloc(4, sizeof(int));
+    c1[0]=0; c1[1]=1; c1[2]=1; c1[3]=0;
+    c2[0]=1; c2[1]=0; c2[2]=0; c2[3]=1;
+    printf("is col [0,1,1,0] in ? : %d\n", is_lig_ex(gril, n, l1));
+    printf("is col [1,0,0,1] in ? : %d\n", is_lig_ex(gril, n, l2));
     alt();
 }
 
@@ -598,26 +753,50 @@ void test_resolution_c3(){
     printf("-----\n");
     gril[0][0]=1;
     gril[0][1]=0;
-    gril[0][2]=1;
-    gril[0][3]=0;
+    gril[0][2]=-1;
+    gril[0][3]=-1;
     gril[1][0]=0;
     gril[1][1]=1;
-    gril[1][2]=0;
-    gril[1][3]=-1;
-    gril[2][0]=0;
-    gril[2][1]=1;
-    gril[2][2]=-1;
-    gril[2][3]=-1;
+    gril[1][2]=1;
+    gril[1][3]=0;
+    gril[2][0]=1;
+    gril[2][1]=0;
+    gril[2][2]=0;
+    gril[2][3]=1;
     gril[3][0]=-1;
-    gril[3][1]=0;
+    gril[3][1]=-1;
     gril[3][2]=0;
     gril[3][3]=1;
+    affiche(gril, n, n);
+    alt();
+    int c3lig = res_c3_lig(gril, n); 
+    printf("\nI  I  I  I  I\n");
+    printf("V  V  V  V  V\n\n");
+    affiche(gril, n, n);
+    printf("\nchmt lig c3 : %d\n", c3lig);
+    alt();
+    /*int * liga = (int *)calloc(4, sizeof(int));
+    liga[0]=1; liga[1]=0; liga[2]=0; liga[3]=1;
+    int * ligb = (int *)calloc(4, sizeof(int));
+    ligb[0]=1; ligb[1]=0; ligb[2]=1; ligb[3]=0;
+    printf("is in test [1, 0, 0, 1] ? %d\n", is_lig_ex(gril, n, liga));
+    printf("is in test [1, 0, 1, 0] ? %d\n", is_lig_ex(gril, n, ligb));*/
+    gril[1][2]=-1;
+    gril[2][2]=-1;
+    gril[1][3]=-1;
+    gril[2][3]=-1;
+    affiche(gril, n, n);
+    int c3col = res_c3_col(gril, n); 
+    printf("\nI  I  I  I  I\n");
+    printf("V  V  V  V  V\n\n");
+    affiche(gril, n, n);
+    printf("\nchmt col c3 : %d\n", c3col);
 }
 
 
 int main(){
     //test_verif_trait();       //validé
-    test_traitement();       //validé
+    //test_traitement();       //validé
     //test_resolution_c1();   //validé
     //test_resolution_c2();  //validé
     test_resolution_c3();
