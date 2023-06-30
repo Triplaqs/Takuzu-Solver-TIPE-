@@ -273,17 +273,17 @@ bool res_c1_lig(int ** grille, int n){
     for(int i=0; i < n; i++){ //parcours classique par elt
         for(int j = 0; j < n-2; j++){ 
             //cas 2 à coté (avant) 
-            if((grille[i][j+1]==grille[i][j+2])&&(grille[i][j]==-1)){
+            if((grille[i][j+1]==grille[i][j+2])&&(grille[i][j]==-1)&&(grille[i][j+1]!=-1)){
                 grille[i][j]=1-grille[i][j+1];
                 etat=true;
             }
             //cas 2 à coté (après)
-            if((grille[i][j]==grille[i][j+1])&&(grille[i][j+2]==-1)){
+            if((grille[i][j]==grille[i][j+1])&&(grille[i][j+2]==-1)&&(grille[i][j]!=-1)){
                 grille[i][j+2]=1-grille[i][j];
                 etat=true;
             }
             //cas 2 autour 
-            if((grille[i][j]==grille[i][j+2])&&(grille[i][j+1]==-1)){
+            if((grille[i][j]==grille[i][j+2])&&(grille[i][j+1]==-1)&&(grille[i][j]!=-1)){
                 grille[i][j+1]=1-grille[i][j];
                 etat=true;
             }
@@ -298,17 +298,17 @@ bool res_c1_col(int ** grille, int n){
     for(int i=0; i < n-2; i++){ //parcours classique par elt
         for(int j = 0; j < n; j++){ 
             //cas 2 à coté (avant) 
-            if((grille[i+1][j]==grille[i+2][j])&&(grille[i][j]==-1)){
+            if((grille[i+1][j]==grille[i+2][j])&&(grille[i][j]==-1)&&(grille[i+1][j]!=-1)){
                 grille[i][j]=1-grille[i+1][j];
                 etat=true;
             }
             //cas 2 à coté (après)
-            if((grille[i][j]==grille[i+1][j])&&(grille[i+2][j]==-1)){
+            if((grille[i][j]==grille[i+1][j])&&(grille[i+2][j]==-1)&&(grille[i+1][j]!=-1)){
                 grille[i+2][j]=1-grille[i][j];
                 etat=true;
             }
             //cas 2 autour 
-            if((grille[i][j]==grille[i+2][j])&&(grille[i+1][j]==-1)){
+            if((grille[i][j]==grille[i+2][j])&&(grille[i+1][j]==-1)&&(grille[i][j]!=-1)){
                 grille[i+1][j]=1-grille[i][j];
                 etat=true;
             }
@@ -513,6 +513,7 @@ bool res_c3_col(int ** grille, int n){
     return etat;
 }
 
+
 bool res_all(int**grille, int n){
     bool res = false;
     res=res||(res_c1_col(grille, n));
@@ -526,6 +527,7 @@ bool res_all(int**grille, int n){
 
 void resolve(int ** grille, int n){
     bool is=true;
+
     while(is){
         is=res_all(grille, n);
     }
