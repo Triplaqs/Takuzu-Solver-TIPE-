@@ -871,7 +871,7 @@ void test_resolution(){
     alt();
 }
 
-void exemple(){
+void exemple1(){
     int n=6;
     int ** gril = (int**)calloc(n, sizeof(int*));
     for(int i=0; i<n;i++){
@@ -927,8 +927,133 @@ void exemple(){
     printf("\nI  I  I  I  I\n");
     printf("V  V  V  V  V\n\n");
     affiche(gril, n, n);
+    al();
+    printf("is ok ? : %d\n", vrf_all(gril, n));
+    alt();
 }
 
+void exemple2(){
+    int n=6;
+    int ** gril = (int**)calloc(n, sizeof(int*));
+    for(int i=0; i<n;i++){
+        gril[i]=(int*)calloc(n, sizeof(int));
+    }
+    printf("\n-----\nEXEMPLE FACILE\n");
+    printf("-----\n");
+    al();
+    //ligne 1
+    gril[0][0]=1;
+    gril[0][1]=-1;
+    gril[0][2]=-1;
+    gril[0][3]=0;
+    gril[0][4]=-1;
+    gril[0][5]=-1;
+    //ligne 2
+    gril[1][0]=-1;
+    gril[1][1]=-1;
+    gril[1][2]=0;
+    gril[1][3]=0;
+    gril[1][4]=-1;
+    gril[1][5]=1;
+    //ligne 3
+    gril[2][0]=-1;
+    gril[2][1]=0;
+    gril[2][2]=0;
+    gril[2][3]=-1;
+    gril[2][4]=-1;
+    gril[2][5]=1;
+    //ligne 4
+    gril[3][0]=-1;
+    gril[3][1]=-1;
+    gril[3][2]=-1;
+    gril[3][3]=-1;
+    gril[3][4]=-1;
+    gril[3][5]=-1;
+    //ligne 5
+    gril[4][0]=0;
+    gril[4][1]=0;
+    gril[4][2]=-1;
+    gril[4][3]=1;
+    gril[4][4]=-1;
+    gril[4][5]=-1;
+    //ligne 6
+    gril[5][0]=-1;
+    gril[5][1]=1;
+    gril[5][2]=-1;
+    gril[5][3]=-1;
+    gril[5][4]=0;
+    gril[5][5]=0;
+    affiche(gril, n, n);
+    resolve(gril, n);
+    printf("\nI  I  I  I  I\n");
+    printf("V  V  V  V  V\n\n");
+    affiche(gril, n, n);
+    al();
+    printf("is ok ? : %d\n", vrf_all(gril, n));
+    alt();
+}
+
+
+void exemple3(){
+    int n=6;
+    int ** gril = (int**)calloc(n, sizeof(int*));
+    for(int i=0; i<n;i++){
+        gril[i]=(int*)calloc(n, sizeof(int));
+    }
+    printf("\n-----\nEXEMPLE FACILE\n");
+    printf("-----\n");
+    al();
+    //ligne 1
+    gril[0][0]=-1;
+    gril[0][1]=0;
+    gril[0][2]=-1;
+    gril[0][3]=-1;
+    gril[0][4]=-1;
+    gril[0][5]=-1;
+    //ligne 2
+    gril[1][0]=0;
+    gril[1][1]=0;
+    gril[1][2]=-1;
+    gril[1][3]=-1;
+    gril[1][4]=-1;
+    gril[1][5]=-1;
+    //ligne 3
+    gril[2][0]=-1;
+    gril[2][1]=-1;
+    gril[2][2]=-1;
+    gril[2][3]=0;
+    gril[2][4]=-1;
+    gril[2][5]=-1;
+    //ligne 4
+    gril[3][0]=-1;
+    gril[3][1]=-1;
+    gril[3][2]=-1;
+    gril[3][3]=-1;
+    gril[3][4]=-1;
+    gril[3][5]=-1;
+    //ligne 5
+    gril[4][0]=1;
+    gril[4][1]=-1;
+    gril[4][2]=1;
+    gril[4][3]=1;
+    gril[4][4]=-1;
+    gril[4][5]=-1;
+    //ligne 6
+    gril[5][0]=-1;
+    gril[5][1]=-1;
+    gril[5][2]=-1;
+    gril[5][3]=1;
+    gril[5][4]=-1;
+    gril[5][5]=-1;
+    affiche(gril, n, n);
+    resolve(gril, n);
+    printf("\nI  I  I  I  I\n");
+    printf("V  V  V  V  V\n\n");
+    affiche(gril, n, n);
+    al();
+    printf("is ok ? : %d\n", vrf_all(gril, n));
+    alt();
+}
 
 
 int main(){
@@ -938,7 +1063,9 @@ int main(){
     //test_resolution_c2();  //validé
     //test_resolution_c3(); //validé
     //test_resolution();   //validé
-    exemple();
+    //exemple1();         //demande raisonnment non-implémenté (DRNI)
+    //exemple2();        //réussi (facile)   
+    //exemple3();       //DRNI (moyen)
     return 0;
 }
 
