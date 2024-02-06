@@ -259,6 +259,86 @@ bool is_col_ex(int ** grille, int n, int * lig){
     return etat;
 }
 
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
+//================================== TRAITEMENT EN COURS ========================================
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//VRFC =vérification en cours 
+//C2 COLONNE
+bool vrfc_col_cpt(int ** grille, int n){
+    int cpt0 = 0;
+    int cpt1 = 0;
+    bool etat = true;
+    for(int i=0; i < n; i++){
+        cpt0=0;
+        cpt1=0;
+        for(int j=0; j < n; j++){
+            if(grille[j][i]==0){
+                cpt0 ++;
+            }
+            else if(grille[j][i]==1){
+                cpt1 ++;
+            }
+        }
+        //printf("1 : %d, 0 : %d", cpt1, cpt0);
+        etat=etat&&(cpt1<=(n/2))&&(cpt0<=(n/2));
+    }
+    return etat;
+}
+
+//C2 LIGNE
+bool vrfc_lig_cpt(int ** grille, int n){
+    int cpt0 = 0;
+    int cpt1 = 0;
+    bool etat = true;
+    for(int i=0; i < n; i++){
+        cpt0=0;
+        cpt1=0;
+        for(int j=0; j < n; j++){
+            if(grille[i][j]==0){
+                cpt0 ++;
+            }
+            else if(grille[i][j]==1){
+                cpt1 ++;
+            }
+        }
+        //printf("1 : %d, 0 : %d", cpt1, cpt0);
+        etat=etat&&(cpt1<=(n/2))&&(cpt0<=(n/2));
+    }
+    return etat;
+}
+
+//C1 LIGNE
+bool vrfc_lig_adj(int ** grille, int n){
+    bool etat = true;
+    for(int i=0; i < n; i++){
+        //printf("ligne %d\n", i);
+        for(int j=0; j < n-2; j++){
+            //printf("ligne %d : %d\n", i, (etat)&&(!((grille[i][j]==grille[i][j+1])&&(grille[i][j+1]==grille[i][j+2]))));
+            etat = (etat)&&(!((grille[i][j]==grille[i][j+1])&&(grille[i][j+1]==grille[i][j+2])&&((grille[i][j]==1)||(grille[i][j]==0))));
+          //  printf("elt j : %d\n", grille[i][j]);
+        }
+    }
+    return etat;
+}
+
+//C1 COLONNE
+bool vrfc_col_adj(int ** grille, int n){
+    bool etat = true;
+    for(int j=0; j < n; j++){
+        for(int i=0; i < n-2; i++){
+            //printf("colonne %d : %d\n", j, (etat)&&(!((grille[i][j]==grille[i+1][j])&&(grille[i+1][j]==grille[i+2][j]))));
+            etat = (etat)&&(!((grille[i][j]==grille[i+1][j])&&(grille[i+1][j]==grille[i+2][j])&&((grille[i][j]==1)||(grille[i][j]==0))));
+        }
+    }
+    return etat;
+}
+
+//renvoie true si la matrice respecte les règles même avec des pertes false sinon
+bool is_ok_cours(){
+    return true;
+}
+
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
 //======================================= RÉSOLUTION ============================================
@@ -533,6 +613,7 @@ void resolve(int ** grille, int n){
     }
 }
 
+
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
 //========================================= TESTS ===============================================
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -683,7 +764,53 @@ void test_traitement(){
     alt();
 }
 
-
+void test_traitement_cours(){
+    int n=4;
+    int ** gril = (int**)calloc(n, sizeof(int*));
+    for(int i=0; i<n;i++){
+        gril[i]=(int*)calloc(n, sizeof(int));
+    }
+    printf("\n-----\nTESTS TRAITEMENT\n");
+    printf("-----\n");
+    gril[0][0]=1;
+    gril[0][1]=0;
+    gril[0][2]=1;
+    gril[0][3]=0;
+    gril[1][0]=0;
+    gril[1][1]=1;
+    gril[1][2]=0;
+    gril[1][3]=1;
+    gril[2][0]=0;
+    gril[2][1]=1;
+    gril[2][2]=1;
+    gril[2][3]=0;
+    gril[3][0]=1;
+    gril[3][1]=0;
+    gril[3][2]=0;
+    gril[3][3]=1;
+    affiche(gril, n, n);
+    tr();
+    printf("is okay ? : %d\n", vrf_all(gril, n));
+    printf("is loss ? : %d\n", is_loss(gril, n));
+    gril[1][3]=-1;
+    gril[2][2]=-1;
+    gril[2][3]=-1;
+    gril[3][0]=-1;
+    alt();
+    affiche(gril, n, n);
+    tr();
+    printf("verif c2 colomne %d\n", vrfc_col_cpt(gril, n));
+    printf("verif c2 ligne   %d\n", vrfc_lig_cpt(gril, n));
+    gril[3][1]=1;
+    gril[3][2]=1;
+    gril[1][2]=1;
+    alt();
+    affiche(gril, n, n);
+    tr();
+    printf("verif c2 colomne %d\n", vrfc_col_cpt(gril, n));
+    printf("verif c2 ligne   %d\n", vrfc_lig_cpt(gril, n));  
+    //A FAIRE CONTINUE TESTER VRFC LIG/COL ADJ (update : compté sans les -1)
+}
 
 void test_resolution_c1(){
     int n=4;
@@ -1059,13 +1186,14 @@ void exemple3(){
 int main(){
     //test_verif_trait();       //validé
     //test_traitement();       //validé
+    test_traitement_cours();      
     //test_resolution_c1();   //validé
     //test_resolution_c2();  //validé
     //test_resolution_c3(); //validé
-    //test_resolution();   //validé
-    //exemple1();         //demande raisonnment non-implémenté (DRNI)
-    //exemple2();        //réussi (facile)   
-    //exemple3();       //DRNI (moyen)
-    return 0;
+    /*test_resolution();   //validé
+    exemple1();         //demande raisonnment non-implémenté (DRNI)
+    exemple2();        //réussi (facile)   
+    exemple3();       //DRNI (moyen)
+    */return 0;
 }
 
