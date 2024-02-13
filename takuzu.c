@@ -259,6 +259,18 @@ bool is_col_ex(int ** grille, int n, int * lig){
     return etat;
 }
 
+int** association(int ** grille, int n){
+    int ** grilleb;
+    grilleb=(int**)calloc(n, sizeof(int*));
+    for(int i= 0; i<n; i++){
+        grilleb[i]=(int*)calloc(n, sizeof(int));
+        for(int j =0; j<n; j++){
+            grilleb[i][j]=grille[i][j];
+        }
+    }
+    return grilleb;
+}
+
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
 //================================== TRAITEMENT EN COURS ========================================
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -334,10 +346,61 @@ bool vrfc_col_adj(int ** grille, int n){
     return etat;
 }
 
-//renvoie true si la matrice respecte les règles même avec des pertes false sinon
-bool is_ok_cours(){
+
+
+//C3 LIGNE
+// renvoie false si 2 colonnes sont identiques (-1 non pris en compte)
+// true sinon
+bool vrfc_lig_id(int ** grille, int n){
+    for(int i=0; i < n; i++){ //parcours première ligne, 1er elt à comparer
+        for(int j = i+1; j < n; j++){ //parcours du reste de la ligne depuis l'elt précédent
+            if(grille[i][0]==grille[j][0]){ //si 2 premier elt de colonne sont identiques :
+                int cpt=1;                   //on parcours les elts de chaque 2 à 2 
+                while((cpt<n)&&(grille[i][cpt]==grille[j][cpt])&&(grille[j][cpt]!=-1)){  //tant qu'ils sont égaux
+                    cpt++;             
+                }
+                if(cpt==n){   //si on parvient jusqu'au bout de deux colonnes, alors 2 colonnes sont égales
+                    return false;
+                }
+            }
+        }
+    }
     return true;
 }
+
+//C3 COLONNE
+bool vrfc_col_id(int ** grille, int n){
+    for(int i=0; i < n; i++){ //parcours première colonne, 1er elt à comparer
+        for(int j = i+1; j < n; j++){ //parcours du reste de la ligne depuis l'elt précédent
+            if(grille[0][i]==grille[0][j]){ //si 2 premier elt de colonne sont identiques :
+                int cpt=1;                   //on parcours les elts de chaque 2 à 2 
+                while((cpt<n)&&(grille[cpt][i]==grille[cpt][j])&&(grille[cpt][j]!=-1)){  //tant qu'ils sont égaux
+                    cpt++;                   
+                }
+                if(cpt==n){   //si on parvient jusqu'au bout de deux colonnes, alors 2 colonnes sont égales
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+
+
+//renvoie true si la matrice respecte les règles même avec des pertes false sinon
+bool is_ok_cours(int ** grille, int n){
+    bool res = true;
+    res = res&&(vrfc_lig_adj(grille, n));
+    res = res&&(vrfc_col_adj(grille, n));
+    res = res&&(vrfc_lig_cpt(grille, n));
+    res = res&&(vrfc_col_cpt(grille, n));
+    res = res&&(vrfc_lig_id(grille, n));
+    res = res&&(vrfc_col_id(grille, n));
+    return res;
+}
+
+
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
@@ -613,6 +676,55 @@ void resolve(int ** grille, int n){
     }
 }
 
+//RESOUD LORS DE L'EXPLORATION EXHAUSTIVE RENVOIE 
+//TRUE SI LE PROBLEME EST LA VALEUR DE BASE
+//FALSE SI ON TOMBE DANS UNE IMPASSE 
+bool resolve_absurde(int ** grille, int n){
+    bool is=true;
+    while(is&&(is_ok_cours(grille, n))){
+        is=res_all(grille, n);
+    }
+    if(!is_ok_cours(grille, n)){
+        return true;
+    }
+    else if(!is){
+        return false;
+    }
+    else{
+        return false;
+        }
+}
+
+void reso_exhaust(int ** grille, int n){
+    int ** grilleb;
+    while(!(vrf_all(grille, n))){  //tant que la grille n'est pas remplie
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                if(grille[i][j]==-1){     //on recherche les pertes
+                    grilleb = association(grille, n);
+                    grilleb[i][j]=1;        
+                    if(resolve_absurde(grilleb, n)){   //on essaye de developper avec une valeur
+                        grille[i][j]=0;
+                    }
+                    else{
+                        grilleb=association(grille, n);
+                        grilleb[i][j]=0;
+                        if(resolve_absurde(grilleb, n)){   //on essaye de developper avec une valeur
+                           grille[i][j]=1;
+                        }
+                    }
+                    resolve(grille, n);
+                }
+            }
+        }
+    }
+}
+
+void resolution(int ** grille, int n){
+    resolve(grille, n);
+    reso_exhaust(grille, n);
+}
+
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
 //========================================= TESTS ===============================================
@@ -809,6 +921,42 @@ void test_traitement_cours(){
     tr();
     printf("verif c2 colomne %d\n", vrfc_col_cpt(gril, n));
     printf("verif c2 ligne   %d\n", vrfc_lig_cpt(gril, n));  
+    alt();
+    gril[3][2]=-1;
+    gril[1][2]=-1;
+    gril[2][1]=-1;
+    affiche(gril, n, n);
+    tr();
+    printf("verif c1 colomne %d\n", vrfc_col_adj(gril, n));
+    printf("verif c1 ligne   %d\n", vrfc_lig_adj(gril, n));
+    gril[2][2]=1;
+    gril[1][2]=1;
+    gril[1][3]=1;
+    affiche(gril, n, n);
+    tr();
+    printf("verif c1 colomne %d\n", vrfc_col_adj(gril, n));
+    printf("verif c1 ligne   %d\n", vrfc_lig_adj(gril, n));
+    gril[3][2]=-1;
+    gril[1][2]=-1;
+    gril[2][1]=-1;
+    gril[0][1]=1;
+    gril[1][1]=-1;
+    gril[2][1]=1;
+    gril[3][1]=-1;
+    gril[3][0]=0;
+    affiche(gril, n, n);
+    tr();
+    printf("verif c3 colomne %d\n", vrfc_col_id(gril, n));
+    printf("verif c3 ligne   %d\n", vrfc_lig_id(gril, n));
+    gril[1][1]=1;
+    gril[1][2]=1;
+    gril[3][1]=1;
+    gril[3][2]=1;
+    affiche(gril, n, n);
+    tr();
+    printf("verif c3 colomne %d\n", vrfc_col_id(gril, n));
+    printf("verif c3 ligne   %d\n", vrfc_lig_id(gril, n));
+
     //A FAIRE CONTINUE TESTER VRFC LIG/COL ADJ (update : compté sans les -1)
 }
 
@@ -1051,6 +1199,13 @@ void exemple1(){
     gril[5][5]=0;
     affiche(gril, n, n);
     resolve(gril, n);
+    //|||||||||||||||||||||||||
+    //gril[2][2]=0; //FONCTIONNE !!!!
+    //gril[0][0]=1;
+    //printf("\nresolve absurde : %d\n", resolve_absurde(gril, 6));
+    resolution(gril, 6);
+
+    //|||||||||||||||||||||||||
     printf("\nI  I  I  I  I\n");
     printf("V  V  V  V  V\n\n");
     affiche(gril, n, n);
@@ -1111,7 +1266,7 @@ void exemple2(){
     gril[5][4]=0;
     gril[5][5]=0;
     affiche(gril, n, n);
-    resolve(gril, n);
+    resolution(gril, n);
     printf("\nI  I  I  I  I\n");
     printf("V  V  V  V  V\n\n");
     affiche(gril, n, n);
@@ -1127,7 +1282,7 @@ void exemple3(){
     for(int i=0; i<n;i++){
         gril[i]=(int*)calloc(n, sizeof(int));
     }
-    printf("\n-----\nEXEMPLE FACILE\n");
+    printf("\n-----\nEXEMPLE MOYEN\n");
     printf("-----\n");
     al();
     //ligne 1
@@ -1173,7 +1328,7 @@ void exemple3(){
     gril[5][4]=-1;
     gril[5][5]=-1;
     affiche(gril, n, n);
-    resolve(gril, n);
+    resolution(gril, n);
     printf("\nI  I  I  I  I\n");
     printf("V  V  V  V  V\n\n");
     affiche(gril, n, n);
@@ -1184,16 +1339,20 @@ void exemple3(){
 
 
 int main(){
-    //test_verif_trait();       //validé
-    //test_traitement();       //validé
-    test_traitement_cours();      
+    //test_verif_trait();        //validé
+    //test_traitement();        //validé
+    //test_traitement_cours(); //validé     
     //test_resolution_c1();   //validé
     //test_resolution_c2();  //validé
     //test_resolution_c3(); //validé
-    /*test_resolution();   //validé
+    //test_resolution();   //validé
     exemple1();         //demande raisonnment non-implémenté (DRNI)
-    exemple2();        //réussi (facile)   
-    exemple3();       //DRNI (moyen)
-    */return 0;
+    //exemple2();        //réussi (facile)   
+    //exemple3();       //DRNI (moyen)
+    return 0;
 }
 
+/*NOTE :
+TESTER RESOLVE ABSURDE L682 a l'air de fonctionner, mais la résolution réécrit sur les valeurs ??
+TESTER RESO EXHAUST L698
+*/
