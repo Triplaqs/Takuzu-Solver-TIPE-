@@ -2,6 +2,7 @@ import numpy as np
 import os
 import sys
 import cv2 as cv
+import csv
 print(cv.__version__)
 
 """
@@ -55,6 +56,13 @@ def affiche_decomposition(R):
         for i in range(len(R)):
             print(R[i])
 
+def affiche_list_tak(L):
+    for i in range(len(L)):
+        print("[")
+        for j in range(len(L[i])):
+            affiche(L[i][j])
+        print("]")
+
 
 #########################################################################################
 ###################################-----TO BIN GRILL-----################################
@@ -107,7 +115,7 @@ def gti(grille):
 #renvoie R liste des listes pour les possibles décompositions en grilles de coté paire
 def combinaisons(grille, L):
     n=gti(grille)
-    print("nombre de bits : ", n, "\n")
+    #print("nombre de bits : ", n, "\n") #RÉACTIVER POUR AFFICHAGE
     assert(n>=4)
     R=[]
     i=len(L)-1
@@ -165,7 +173,7 @@ def str_to_gril(string, T):
         for i in range(dim):
             res[k].append([])
             for j in range(dim):
-                res[k][i].append(string[cpt])
+                res[k][i].append(int(string[cpt]))
                 cpt+=1
     return res
 
@@ -270,7 +278,7 @@ def c3_lig(grille):
     return True
 
 def is_ok(grille):
-    res = c1_col(grille) and c1_lig(grille) and c2_col(grille) and c2_lig(grille) and c3_col(grille) and c3_lig(grille)
+    res = True and c1_col(grille) and c1_lig(grille) and c2_col(grille) and c2_lig(grille) and c3_col(grille) and c3_lig(grille)
     return res
 
 #########################################################################################
@@ -288,6 +296,8 @@ MF = [[0, 1, 0, 0],
      [1, 1, 0, 1],
      [1, 1, 0, 1]]
 
+MU = [[0, 1],
+      [1, 0]]
 
 print("c1 col : MV", c1_col(MV))
 print("c1 lig : MV", c1_lig(MV))
@@ -304,6 +314,15 @@ print("c2 col : MF", c2_col(MF))
 print("c3 col : MF", c3_col(MF))
 print("c3 lig : MF", c3_lig(MF))
 print("is ok ?  MV", is_ok(MF))
+print("")
+print("c1 col : MF", c1_col(MU))
+print("c1 lig : MF", c1_lig(MU))
+print("c2 lig : MF", c2_lig(MU))
+print("c2 col : MF", c2_col(MU))
+print("c3 col : MF", c3_col(MU))
+print("c3 lig : MF", c3_lig(MU))
+print("is ok ?  MV", is_ok(MU))
+
 
 
 
@@ -339,12 +358,31 @@ affiche(bin_list8(car))
 print("\n\ncombinaisons de la grille :\n")
 print("\ndimensions de l'image : 1x1 pixels")
 affiche_decomposition(combinaisons([[['1', '1', '1']]], L))
+print("img1 :")
+affiche(car)
 print("\ndimensions de l'image : 2x2 pixels")
 affiche_decomposition(combinaisons(car, L))
-print("\n")
-print("tout le code binaire", gril_to_str(car))
-print(len(gril_to_str(car)))
+print("\nimg1 :\n")
+affiche(car)
+print("\ntout le code binaire", gril_to_str(car))
+print("")
 affiche_decomposition(gril_to_compo(car))
+img2= [[[60, 90, 150]]]
+print("\nimg2 :")
+affiche(img2)
+print("string : ", gril_to_str(img2))
+print("compositions : ")
+affiche_decomposition(combinaisons(img2, L))
+taks = compo_to_tak(gril_to_str(img2), combinaisons(img2, L))
+affiche_list_tak(taks)
+print("")
+print("is ok toutes les grilles de cla composition")
+for j in range(len(taks)):
+    for i in range(len(taks[j])):
+        print("grille compo ", j, " N°", i, " : ", is_ok(taks[j][i]))
+    print("")
+
+affiche_decomposition(gril_to_compo(img2))
 
 
 
