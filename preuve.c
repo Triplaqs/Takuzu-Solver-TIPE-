@@ -252,11 +252,13 @@ void test_preuve(){
 
     int ** tab4 = remplir_tab_cns(4, 3);
     affichet(tab4[4095], 6);
-    printf("is ok tab 2x2 : %d", is_ok_tab(res2[0], 2, 3, tab2));
+    //printf("is ok tab 2x2 : %d\n", is_ok_tab(res2[0], 2, 3, tab2));
     printf("is ok grille 2x2 pertes de 3 : %d\n", is_solvable(2, 3));
     printf("is ok grille 2x2 pertes de 4 : %d\n", is_solvable(2, 4));
     printf("cns de cases cachées en 2x2 : %d\n", cns(2));
     printf("cns de cases cachées en 4x4 : %d\n", cns(4));
+    //printf("cns de cases cachées en 6x6 : %d\n", cns(6));
+
 }
 
 int main(){
