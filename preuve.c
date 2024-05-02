@@ -125,7 +125,7 @@ void affichet(int*tab, int n){
     for(int i = 0; i<n; i++){
         printf("%d, ", tab[i]);
     }
-    printf(" ]");
+    printf(" ]\n");
 }
 
 
@@ -134,11 +134,11 @@ void affichet(int*tab, int n){
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-//prend une grille, sa taille et un tableau de tableau/coordonnées
+//prend une grille, sa taille et un tableau de coordonnées
 //renvoie true si la grille sans toutes les cases du tableau admet une solution unique
 bool unique(int** gril, int n, int*tab, int k){
     for(int i = 0; i<k; i++){
-        gril[tab[2*k]][tab[2*k+1]]=-1;
+        gril[tab[2*i]][tab[2*i+1]]=-1;
     }
     bool res = resolution_pratique(gril, n);
     return res;
@@ -160,16 +160,17 @@ int pui(int a, int b){
 //tab dim : 2k
 void exhaustab(int n, int k, int* tab, int i, int**res, int*cpt){
     //n^k x 2k
+    if(i==2*k){
+        res[*cpt]=tab;
+        *cpt=(*cpt)+1;
+        return;
+    }
     for(int j = 0; j<n; j++){
         int* tab2 = copyt(tab, 2*k);
         tab2[i]=j;
         exhaustab(n, k, tab2, i+1, res, cpt);
-    }  
-    free(tab);     
-    if(i==2*k){
-        res[*cpt]=tab;
-        *cpt=(*cpt)+1;
-    }
+    }     
+    free(tab);
 }
 
 //init exhaustab  
@@ -188,10 +189,40 @@ int** remplir_tab_cns(int n, int k){
     return res;
 }
 
-//renvoie le nombre de cases non-dévoilées maximale pour avoir l'unicité
-int cns(int** gril, int n){
-    return 0;
+//prend une grille, un tableau de tableaux de coordonnées et renvoie si la grille moins
+//les coordonnées admet une unique solution
+bool is_ok_tab(int**gril, int n, int k, int**tab){
+    bool res= true;
+    int p = pui(n, 2*k);
+    for(int i = 0; i<p; i++){
+        res=res&&(unique(gril, n, tab[i], k));
+    }
+    return res;
+}
 
+
+//renvoie true si une grille de dim n est solvable pour toute k pertes
+int is_solvable(int n, int k){
+    int*** all_grils = stocker_grilles(n);
+    int**tab = remplir_tab_cns(n, k);
+    int p = cbn_grilles(n);
+    bool res=true;
+    for(int i = 0; i<p; i++){
+        res=res&&(is_ok_tab(all_grils[i], n, k, tab));
+    }
+    return res;
+
+}
+
+int cns(int n){
+    bool res=true;
+    for(int i = 0; i<(n*n)+1; i++){
+        res=is_solvable(n, i);
+        if(!res){
+            return (i-1);
+        }
+    }
+    return n*n;
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
@@ -214,10 +245,18 @@ void test_manipulation(){
 void test_preuve(){
     int*** res2 = stocker_grilles(2);
     int*** res4 = stocker_grilles(4);
-    int ** tab2 = remplir_tab_cns(2, 1);
+    int ** tab2 = remplir_tab_cns(2, 3);
     affichet(tab2[0], 6);
+    affiche(res2[0], 2, 2);
+    printf("%d\n", unique(res2[0], 2, tab2[0], 3));
+
     int ** tab4 = remplir_tab_cns(4, 3);
-    affichet(tab4[0], 6);
+    affichet(tab4[4095], 6);
+    printf("is ok tab 2x2 : %d", is_ok_tab(res2[0], 2, 3, tab2));
+    printf("is ok grille 2x2 pertes de 3 : %d\n", is_solvable(2, 3));
+    printf("is ok grille 2x2 pertes de 4 : %d\n", is_solvable(2, 4));
+    printf("cns de cases cachées en 2x2 : %d\n", cns(2));
+    printf("cns de cases cachées en 4x4 : %d\n", cns(4));
 }
 
 int main(){
