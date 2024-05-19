@@ -195,8 +195,53 @@ def bonnes_compos(takuzus, compos):
             res.append(compos[k])
     return res
 
+#renvoie true si un elt est dans un tableau, faux sinon
+def is_in_tab(tab, elt):
+    for i in range(len(tab)):
+        if(tab[i]==elt):
+            return True
+    return False
+
+#prend un tableau et renvoie toutes les combinaisons à partir de ces elts
+def _mult_comb(temp, res, tab, i, indices):
+    if(i==len(tab)):
+        if (not(is_in_tab(res, temp))):
+            res.append(temp)
+    for k in range(len(tab)):
+        if (not(is_in_tab(indices, k))):
+            indices2=copy(indices)
+            indices2.append(k)
+            temp2=copy(temp)
+            temp2.append(tab[k])
+            _mult_comb(temp2, res, tab, i+1, indices2)
+
+#init _mult_comb
+def mult_comb(tab):
+    res=[]
+    _mult_comb([], res, tab, 0, [])
+    return res
+    
+def combinaisons_mult(img):
+    all = combinaisons(img, L)
+    res=[]
+    for i in range(len(all)):
+        temp=mult_comb(all[i])
+        for j in range(len(temp)):
+            res.append(temp[j])
+    return res
+    
+
+#prend une image et renvoie les bonnes compos possibles pour l'encoder en Takuzu
 def gril_to_compo(img):
     compos = combinaisons(img, L)
+    string = gril_to_str(img)
+    lltak = compo_to_tak(string, compos)
+    return bonnes_compos(lltak, compos)
+
+
+#prend une image et renvoie les bonnes compos possibles pour l'encoder en Takuzu
+def gril_to_compo_mult(img):
+    compos = combinaisons_mult(img)
     string = gril_to_str(img)
     lltak = compo_to_tak(string, compos)
     return bonnes_compos(lltak, compos)
@@ -338,6 +383,7 @@ dim=2
 
 #ouverture de l'image sous forme de matrice
 img = cv.imread("/home/axel/Documents/TIPE/Implé/ex1.png")
+img3 = cv.imread("/home/axel/Documents/TIPE/Implé/img2.png")
 assert img is not None #image vide/non trouvée/erreur ?
 #print(img)
 temp=[]
@@ -358,10 +404,14 @@ affiche(bin_list8(car))
 print("\n\ncombinaisons de la grille :\n")
 print("\ndimensions de l'image : 1x1 pixels")
 affiche_decomposition(combinaisons([[['1', '1', '1']]], L))
+print("\n décomposition complète")
+affiche_decomposition(combinaisons_mult([[['1', '1', '1']]]))
 print("img1 :")
 affiche(car)
 print("\ndimensions de l'image : 2x2 pixels")
 affiche_decomposition(combinaisons(car, L))
+print("\n v2 décomposition")
+#affiche_decomposition(combinaisons_mult(car)) #TROP LOURD
 print("\nimg1 :\n")
 affiche(car)
 print("\ntout le code binaire", gril_to_str(car))
@@ -383,7 +433,8 @@ for j in range(len(taks)):
     print("")
 
 affiche_decomposition(gril_to_compo(img2))
-
+print(gti(img3))
+print(mult_comb([1,2, 3]))
 
 
 
