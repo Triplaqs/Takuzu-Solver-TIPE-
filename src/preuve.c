@@ -1,4 +1,5 @@
-#include "takuzu.c"
+#include "preuve.h"
+#include "takuzu.h"
 #include <time.h>
 #include <stdio.h>
 
