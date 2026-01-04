@@ -1400,7 +1400,7 @@ void exemple4(){
 }
 
 
-int main(){
+int main0(){
     //test_verif_trait();        //validé
     //test_traitement();        //validé
     //test_traitement_cours(); //validé     
