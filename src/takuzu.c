@@ -1605,7 +1605,7 @@ int main2(){
     //test_resolution_c1();   //validé
     //test_resolution_c2();  //validé
     //test_resolution_c3(); //validé
-    //test_resolution();   //validé
+    test_resolution();   //validé
     //exemple1();         //réussi demande raisonnment non-implémenté (DRNI)
     //exemple2();        //réussi (facile)   
     //exemple3();       //réussi (moyen)
