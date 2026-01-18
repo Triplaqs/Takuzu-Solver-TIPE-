@@ -1,8 +1,9 @@
-#include "takuzu.h"
+#include "include/takuzu.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <time.h>
 
 /*/
 (c1) : Pas plus de 2 elements identiques adjacents
@@ -260,6 +261,7 @@ bool is_col_ex(int ** grille, int n, int * lig){
     return etat;
 }
 
+//copie une matrice
 int** association(int ** grille, int n){
     int ** grilleb;
     grilleb=(int**)calloc(n, sizeof(int*));
@@ -721,11 +723,141 @@ void reso_exhaust(int ** grille, int n){
     }
 }
 
+//RENVOIE TRUE SI UNIQUE 
+//RENVOIE FALSE SI IL Y A POSSIBLEMENT D'AUTRES SOLUTIONS
+bool reso_exhaust_preuve(int ** grille, int n){
+    int ** grilleb;
+    bool unicite = false;
+    while(!(vrf_all(grille, n))){  //tant que la grille n'est pas remplie
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                if(grille[i][j]==-1){     //on recherche les pertes
+                    grilleb = association(grille, n);
+                    grilleb[i][j]=1;
+                    bool test_preuve=true;        
+                    if(resolve_absurde(grilleb, n)){   //on essaye de developper avec une valeur
+                        grille[i][j]=0;
+                        test_preuve=test_preuve&&true;
+                    }
+                    else{
+                        test_preuve=false;
+                        grilleb=association(grille, n);
+                        grilleb[i][j]=0;
+                        if(resolve_absurde(grilleb, n)){   //on essaye de developper avec une valeur
+                           grille[i][j]=1;
+                        }
+                    }
+                    grilleb = association(grille, n);
+                    grilleb[i][j]=0;
+                    if(resolve_absurde(grilleb, n)){   //on essaye de developper avec une valeur
+                        grille[i][j]=1;
+                        test_preuve=test_preuve&&true;
+                    }
+                    else{
+                        test_preuve=false;
+                        grilleb=association(grille, n);
+                        grilleb[i][j]=1;
+                        if(resolve_absurde(grilleb, n)){   //on essaye de developper avec une valeur
+                           grille[i][j]=0;
+                        }
+
+                    }
+                    //printf("%d\n", test_preuve);
+                    unicite=unicite||test_preuve; //test preuve essaye une autre valeur pour vérifier que 2 réponses ne sont pas impossibles
+                    resolve(grille, n); 
+                }
+            }
+        }
+    }
+    if(!unicite){
+        printf("\nSOLUTION UNIQUE\n");
+    }
+    else{
+        printf("\nSOLUTION NON UNIQUE\n");
+    }
+    return !unicite;
+}
+
+//RENVOIE TRUE SI UNIQUE 
+//RENVOIE FALSE SI IL Y A POSSIBLEMENT D'AUTRES SOLUTIONS
+bool reso_exhaust_preuve_temps(int ** grille, int n){
+    int ** grilleb;
+    bool unicite = false;
+    time_t beg=time(NULL);
+    time_t try;
+    while(!(vrf_all(grille, n))){  //tant que la grille n'est pas remplie
+        try=time(NULL);
+        if(difftime(try, beg)>=(n*1.0)){ //si l'opération dure plus de n secondes
+            printf("\nrésolution échouée\n");
+            return false;
+        }
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                if(grille[i][j]==-1){     //on recherche les pertes
+                    grilleb = association(grille, n);
+                    grilleb[i][j]=1;
+                    bool test_preuve=true;        
+                    if(resolve_absurde(grilleb, n)){   //on essaye de developper avec une valeur
+                        grille[i][j]=0;
+                        test_preuve=test_preuve&&true;
+                    }
+                    else{
+                        test_preuve=false;
+                        grilleb=association(grille, n);
+                        grilleb[i][j]=0;
+                        if(resolve_absurde(grilleb, n)){   //on essaye de developper avec une valeur
+                           grille[i][j]=1;
+                        }
+                    }
+                    grilleb = association(grille, n);
+                    grilleb[i][j]=0;
+                    if(resolve_absurde(grilleb, n)){   //on essaye de developper avec une valeur
+                        grille[i][j]=1;
+                        test_preuve=test_preuve&&true;
+                    }
+                    else{
+                        test_preuve=false;
+                        grilleb=association(grille, n);
+                        grilleb[i][j]=1;
+                        if(resolve_absurde(grilleb, n)){   //on essaye de developper avec une valeur
+                           grille[i][j]=0;
+                        }
+
+                    }
+                    //printf("%d\n", test_preuve);
+                    unicite=unicite||test_preuve; //test preuve essaye une autre valeur pour vérifier que 2 réponses ne sont pas impossibles
+                    resolve(grille, n); 
+                }
+            }
+        }
+    }
+    if(!unicite){
+        //printf("\nSOLUTION UNIQUE\n");
+    }
+    else{
+        //printf("\nSOLUTION NON UNIQUE\n");
+    }
+    return !unicite;
+}
+
 void resolution(int ** grille, int n){
     resolve(grille, n);
     reso_exhaust(grille, n);
 }
 
+//TRUE SI UNIQUE
+//FALSE SINON
+bool resolution_preuve(int ** grille, int n){
+    resolve(grille, n);
+    bool res = reso_exhaust_preuve(grille, n);
+    return res;
+}
+
+bool resolution_pratique(int ** grille, int n){
+    resolve(grille, n);
+    bool res = reso_exhaust_preuve_temps(grille, n);
+    return res;
+}
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
 //========================================= TESTS ===============================================
@@ -1204,7 +1336,7 @@ void exemple1(){
     //gril[2][2]=0; //FONCTIONNE !!!!
     //gril[0][0]=1;
     //printf("\nresolve absurde : %d\n", resolve_absurde(gril, 6));
-    resolution(gril, 6);
+    resolution_preuve(gril, 6);
 
     //|||||||||||||||||||||||||
     printf("\nI  I  I  I  I\n");
@@ -1267,7 +1399,7 @@ void exemple2(){
     gril[5][4]=0;
     gril[5][5]=0;
     affiche(gril, n, n);
-    resolution(gril, n);
+    resolution_preuve(gril, n);
     printf("\nI  I  I  I  I\n");
     printf("V  V  V  V  V\n\n");
     affiche(gril, n, n);
@@ -1288,14 +1420,14 @@ void exemple3(){
     al();
     //ligne 1
     gril[0][0]=-1;
-    gril[0][1]=0;
+    gril[0][1]=-1;
     gril[0][2]=-1;
     gril[0][3]=-1;
     gril[0][4]=-1;
     gril[0][5]=-1;
     //ligne 2
-    gril[1][0]=0;
-    gril[1][1]=0;
+    gril[1][0]=-1;
+    gril[1][1]=-1;
     gril[1][2]=-1;
     gril[1][3]=-1;
     gril[1][4]=-1;
@@ -1304,32 +1436,38 @@ void exemple3(){
     gril[2][0]=-1;
     gril[2][1]=-1;
     gril[2][2]=-1;
-    gril[2][3]=0;
-    gril[2][4]=-1;
-    gril[2][5]=-1;
+    gril[2][3]=-1;
+    gril[2][4]=1;
+    gril[2][5]=1;
     //ligne 4
-    gril[3][0]=-1;
-    gril[3][1]=-1;
+    gril[3][0]=1;
+    gril[3][1]=1;
     gril[3][2]=-1;
     gril[3][3]=-1;
     gril[3][4]=-1;
     gril[3][5]=-1;
     //ligne 5
-    gril[4][0]=1;
-    gril[4][1]=-1;
-    gril[4][2]=1;
-    gril[4][3]=1;
-    gril[4][4]=-1;
+    gril[4][0]=-1;
+    gril[4][1]=1;
+    gril[4][2]=-1;
+    gril[4][3]=-1;
+    gril[4][4]=0;
     gril[4][5]=-1;
     //ligne 6
-    gril[5][0]=-1;
+    gril[5][0]=1;
     gril[5][1]=-1;
     gril[5][2]=-1;
-    gril[5][3]=1;
+    gril[5][3]=-1;
     gril[5][4]=-1;
-    gril[5][5]=-1;
+    gril[5][5]=1;
     affiche(gril, n, n);
-    resolution(gril, n);
+    resolve(gril, n);
+    /*/
+    resolve(gril, n);
+    al();
+    affiche(gril, n, n);
+    /*/
+    resolution_preuve(gril, n);
     printf("\nI  I  I  I  I\n");
     printf("V  V  V  V  V\n\n");
     affiche(gril, n, n);
@@ -1390,7 +1528,7 @@ void exemple4(){
     gril[5][4]=-1;
     gril[5][5]=0;
     affiche(gril, n, n);
-    resolution(gril, n);
+    resolution_preuve(gril, n);
     printf("\nI  I  I  I  I\n");
     printf("V  V  V  V  V\n\n");
     affiche(gril, n, n);
@@ -1399,8 +1537,68 @@ void exemple4(){
     alt();
 }
 
+void exemple5(){
+    int n=6;
+    int ** gril = (int**)calloc(n, sizeof(int*));
+    for(int i=0; i<n;i++){
+        gril[i]=(int*)calloc(n, sizeof(int));
+    }
+    printf("\n-----\nEXEMPLE DIFFICILE\n");
+    printf("-----\n");
+    al();
+    //ligne 1
+    gril[0][0]=-1;
+    gril[0][1]=-1;
+    gril[0][2]=0;
+    gril[0][3]=-1;
+    gril[0][4]=-1;
+    gril[0][5]=-1;
+    //ligne 2
+    gril[1][0]=-1;
+    gril[1][1]=-1;
+    gril[1][2]=-1;
+    gril[1][3]=1;
+    gril[1][4]=-1;
+    gril[1][5]=-1;
+    //ligne 3
+    gril[2][0]=-1;
+    gril[2][1]=-1;
+    gril[2][2]=-1;
+    gril[2][3]=-1;
+    gril[2][4]=-1;
+    gril[2][5]=-1;
+    //ligne 4
+    gril[3][0]=-1;
+    gril[3][1]=0;
+    gril[3][2]=-1;
+    gril[3][3]=1;
+    gril[3][4]=-1;
+    gril[3][5]=0;
+    //ligne 5
+    gril[4][0]=-1;
+    gril[4][1]=-1;
+    gril[4][2]=-1;
+    gril[4][3]=-1;
+    gril[4][4]=-1;
+    gril[4][5]=-1;
+    //ligne 6
+    gril[5][0]=-1;
+    gril[5][1]=-1;
+    gril[5][2]=0;
+    gril[5][3]=-1;
+    gril[5][4]=-1;
+    gril[5][5]=0;
+    affiche(gril, n, n);
+    resolution_pratique(gril, n);
+    printf("\nI  I  I  I  I\n");
+    printf("V  V  V  V  V\n\n");
+    affiche(gril, n, n);
+    al();
+    printf("is ok ? : %d\n", vrf_all(gril, n));
+    alt();
+}
 
-int main0(){
+int main2(){
     //test_verif_trait();        //validé
     //test_traitement();        //validé
     //test_traitement_cours(); //validé     
@@ -1412,6 +1610,7 @@ int main0(){
     //exemple2();        //réussi (facile)   
     //exemple3();       //réussi (moyen)
     //exemple4();      //réussi (difficile)
+    //exemple5();     //réussi (skip au bout de n secondes) (impossible)
     return 0;
 }
 

@@ -1,7 +1,8 @@
-#include "preuve.h"
-#include "takuzu.h"
+#include "include/preuve.h"
+#include "include/takuzu.h"
 #include <time.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 /*unsigned long long int add(unsigned long int n, unsigned long long int sum){
     return (n == 0) ? sum : add(n-1, n+sum); //tail recursion form
@@ -11,6 +12,7 @@
 //=================================== MANPILULATION =============================================
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+//free une matrice de dim nxn
 void freem(int ** gril, int n){
     for(int i = 0; i<n; i++){
         free(gril[i]);
@@ -18,7 +20,7 @@ void freem(int ** gril, int n){
     free(gril);
 }
 
-//Fonction récursive de remplissage 
+//Fonction récursive de remplissage d'une matrice de 0 et de 1
 void remplir(int ** gril, int n, int i, int j, int *cpt){
     int ** grila = association(gril, n);
     int ** grilb = association(gril, n);
@@ -47,7 +49,7 @@ void remplir(int ** gril, int n, int i, int j, int *cpt){
     }
 }
 
-//calcul des grilles valides parmis les nxn
+//calcul le nombre de grilles valides parmis les grilles de dim nxn
 int cbn_grilles(int n){
     int ** grille=(int**)calloc(n, sizeof(int*));
     for(int i=0; i<n; i++){
@@ -102,6 +104,7 @@ int*** stocker_grilles(int n){
     return res;
 }
 
+//copie une grille de dim nxp
 int** copy(int** grille, int n, int p){
     int** res = (int**)calloc(n, sizeof(int*));
     for(int i=0; i<n; i++){
@@ -113,6 +116,7 @@ int** copy(int** grille, int n, int p){
     return res;
 }
 
+//copie un tableau de dim n
 int* copyt(int*tab, int n){
     int* res = (int*)calloc(n, sizeof(int));
     for(int i = 0; i<n; i++){
@@ -121,6 +125,7 @@ int* copyt(int*tab, int n){
     return res;
 }
 
+//affiche un tableau de dim n
 void affichet(int*tab, int n){
     printf("[ ");
     for(int i = 0; i<n; i++){
@@ -135,7 +140,7 @@ void affichet(int*tab, int n){
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-//prend une grille, sa taille et un tableau de coordonnées
+//prend une grille, sa taille et un tableau de coordonnées sous la forme [x1, y1, x2, y2, x3, y3...]
 //renvoie true si la grille sans toutes les cases du tableau admet une solution unique
 bool unique(int** gril, int n, int*tab, int k){
     for(int i = 0; i<k; i++){
@@ -145,6 +150,7 @@ bool unique(int** gril, int n, int*tab, int k){
     return res;
 }
 
+//fonction puissance ^*^
 int pui(int a, int b){
     int res = 1;
     for(int i=0; i<b; i++){
@@ -191,7 +197,7 @@ int** remplir_tab_cns(int n, int k){
 }
 
 //prend une grille, un tableau de tableaux de coordonnées et renvoie si la grille moins
-//les coordonnées admet une unique solution
+//les coordonnées du tableau admet une unique solution
 bool is_ok_tab(int**gril, int n, int k, int**tab){
     bool res= true;
     int p = pui(n, 2*k);
@@ -212,9 +218,10 @@ int is_solvable(int n, int k){
         res=res&&(is_ok_tab(all_grils[i], n, k, tab));
     }
     return res;
-
 }
 
+//essaye toutes les quantité de pertes jusqu'à ce qu'il y ai une grille pas solvable
+//renvoie la quantité de pertes tolérée pour conserver l'uncité de la solution
 int cns(int n){
     bool res=true;
     for(int i = 0; i<(n*n)+1; i++){
@@ -234,7 +241,7 @@ void test_manipulation(){
     //printf("result : %llu \n", add(1000000, 0));//OK
     printf("nb de grille valide en 2x2 : %d\n", cbn_grilles(2));
     printf("nb de grille valide en 4x4 : %d\n", cbn_grilles(4));
-    //printf("nb de grille valide en 6x6 : %d\n", cbn_grilles(6));
+    printf("nb de grille valide en 6x6 : %d\n", cbn_grilles(6));
     int*** res2 = stocker_grilles(2);
     int*** res4 = stocker_grilles(4);
     //printf("%d\n", res4[0][0][0]);
@@ -247,25 +254,24 @@ void test_preuve(){
     int*** res2 = stocker_grilles(2);
     int*** res4 = stocker_grilles(4);
     int ** tab2 = remplir_tab_cns(2, 3);
-    affichet(tab2[0], 6);
-    affiche(res2[0], 2, 2);
-    printf("%d\n", unique(res2[0], 2, tab2[0], 3));
-
+    //affichet(tab2[0], 6);
+    //affiche(res2[0], 2, 2);
+    //printf("%d\n", unique(res2[0], 2, tab2[0], 3));
     int ** tab4 = remplir_tab_cns(4, 3);
-    affichet(tab4[4095], 6);
+    //affichet(tab4[4095], 6);
     //printf("is ok tab 2x2 : %d\n", is_ok_tab(res2[0], 2, 3, tab2));
     printf("is ok grille 2x2 pertes de 3 : %d\n", is_solvable(2, 3));
     printf("is ok grille 2x2 pertes de 4 : %d\n", is_solvable(2, 4));
     printf("cns de cases cachées en 2x2 : %d\n", cns(2));
     printf("cns de cases cachées en 4x4 : %d\n", cns(4));
-    //printf("cns de cases cachées en 6x6 : %d\n", cns(6));
+    printf("cns de cases cachées en 6x6 : %d\n", cns(6));
 
 }
 
 int main(){
     main2();
-    //test_manipulation();
-    test_preuve();
+    test_manipulation();
+    //test_preuve();
     return 0;
 }
 

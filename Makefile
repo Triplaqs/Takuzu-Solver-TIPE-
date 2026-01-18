@@ -6,11 +6,11 @@ CFLAGS = -Wall -Wextra -std=c99 -g
 TARGET = preuve
 
 # Fichiers sources
-SRCS = preuve.c takuzu.c
+SRCS = src/preuve.c src/takuzu.c
 OBJS = $(SRCS:.c=.o)
 
 # Headers
-HEADERS = preuve.h takuzu.h
+HEADERS = include/preuve.h include/takuzu.h
 
 # Règle par défaut
 all: $(TARGET)

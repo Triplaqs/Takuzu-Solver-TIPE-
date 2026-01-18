@@ -73,6 +73,7 @@ def affiche_list_tak(L):
 def bis(num):
     return bin(num)[2:]
 
+#nombre to binaire (sur 8 bits)
 @np.vectorize
 def bis8(num):
     res = bin(num)[2:]
@@ -163,7 +164,8 @@ def sqrt(num):
         if(i**2==num):
             return i
 
-#prend une suite de nombre et une décomposition Takuzu et renvoie la liste des grilles STR + 1 COMPO -> LIST TAK
+#prend une suite de nombre et une décomposition Takuzu et renvoie la liste des grilles
+# STR + 1 COMPO -> LIST TAK
 def str_to_gril(string, T):
     cpt=0
     res=[]
@@ -177,14 +179,16 @@ def str_to_gril(string, T):
                 cpt+=1
     return res
 
-#prend une liste de composition un string et renvoie un tableau de tableau de grille de takuzus STR + COMPOS -> LIST LIST TAK
+#prend une liste de composition un string et renvoie un tableau de tableau de grille 
+#de takuzus STR + COMPOS -> LIST LIST TAK
 def compo_to_tak(string, decomposition):
     res = []
     for i in range(len(decomposition)):
         res.append(str_to_gril(string, decomposition[i]))
     return res
 
-#prend la liste des liste de takuzus et les compositions, renvoie que les bonnes compositions
+#prend la liste des liste de takuzus et les compositions, renvoie que les bonnes 
+#compositions
 def bonnes_compos(takuzus, compos):
     res = []
     for k in range(len(takuzus)):
@@ -239,7 +243,7 @@ def gril_to_compo(img):
     return bonnes_compos(lltak, compos)
 
 
-#prend une image et renvoie les bonnes compos possibles pour l'encoder en Takuzu
+#prend une image et renvoie les bonnes compos possibles pour l'encoder en Takuzu avec toutes les compos possibles
 def gril_to_compo_mult(img):
     compos = combinaisons_mult(img)
     string = gril_to_str(img)

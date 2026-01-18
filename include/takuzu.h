@@ -1,6 +1,9 @@
 #ifndef TAKUZU_H
 #define TAKUZU_H
 
+#include <stdio.h>
+#include <stdbool.h>
+
 //Affichage
 
 //un affichage increvable non-esthétique de secours
@@ -85,7 +88,7 @@ int** association(int ** grille, int n);
 
 //VRFC =vérification en cours 
 //C2 COLONNE
-bool vrfc_col_cpt(int ** grille, int n):
+bool vrfc_col_cpt(int ** grille, int n);
 
 
 //C2 LIGNE

@@ -1,6 +1,9 @@
 #ifndef PREUVE_H
 #define PREUVE_H
 
+#include <stdio.h>
+#include <stdbool.h>
+
 // MANIPULATION OBJETS
 
 //libère les allocs d'une matrice
