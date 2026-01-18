@@ -160,6 +160,9 @@ void reso_exhaust(int ** grille, int n);
 
 void resolution(int ** grille, int n);
 
+
+bool resolution_pratique(int ** grille, int n);
+
 //Tests
 
 

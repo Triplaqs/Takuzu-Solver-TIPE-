@@ -1,6 +1,7 @@
 #include "include/preuve.h"
 #include "include/takuzu.h"
 #include <time.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -244,22 +245,22 @@ void test_manipulation(){
     printf("nb de grille valide en 6x6 : %d\n", cbn_grilles(6));
     int*** res2 = stocker_grilles(2);
     int*** res4 = stocker_grilles(4);
-    //printf("%d\n", res4[0][0][0]);
-    //affiche(res4[0], 4, 4);
-    //al();
-    //affiche(res4[71], 4, 4);
+    printf("%d\n", res4[0][0][0]);
+    affiche(res4[0], 4, 4);
+    al();
+    affiche(res4[71], 4, 4);
 }
 
 void test_preuve(){
     int*** res2 = stocker_grilles(2);
     int*** res4 = stocker_grilles(4);
     int ** tab2 = remplir_tab_cns(2, 3);
-    //affichet(tab2[0], 6);
-    //affiche(res2[0], 2, 2);
-    //printf("%d\n", unique(res2[0], 2, tab2[0], 3));
+    affichet(tab2[0], 6);
+    affiche(res2[0], 2, 2);
+    printf("%d\n", unique(res2[0], 2, tab2[0], 3));
     int ** tab4 = remplir_tab_cns(4, 3);
-    //affichet(tab4[4095], 6);
-    //printf("is ok tab 2x2 : %d\n", is_ok_tab(res2[0], 2, 3, tab2));
+    affichet(tab4[4095], 6);
+    printf("is ok tab 2x2 : %d\n", is_ok_tab(res2[0], 2, 3, tab2));
     printf("is ok grille 2x2 pertes de 3 : %d\n", is_solvable(2, 3));
     printf("is ok grille 2x2 pertes de 4 : %d\n", is_solvable(2, 4));
     printf("cns de cases cachées en 2x2 : %d\n", cns(2));
@@ -270,7 +271,7 @@ void test_preuve(){
 
 int main(){
     main2();
-    test_manipulation();
+    //test_manipulation();
     //test_preuve();
     return 0;
 }
