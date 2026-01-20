@@ -272,7 +272,7 @@ void test_preuve(){
 int main(){
     main2();
     //test_manipulation();
-    //test_preuve();
+    test_preuve();
     return 0;
 }
 

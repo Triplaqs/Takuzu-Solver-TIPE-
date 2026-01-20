@@ -386,8 +386,10 @@ print("\nMAIN\n")
 dim=2
 
 #ouverture de l'image sous forme de matrice
-img = cv.imread("/home/axel/Documents/TIPE/Implé/ex1.png")
-img3 = cv.imread("/home/axel/Documents/TIPE/Implé/img2.png")
+img = cv.imread("attachments/ex1.png")
+img3 = cv.imread("attachments/img2.png")
+import os
+print("Le script cherche à partir de :", os.getcwd())
 assert img is not None #image vide/non trouvée/erreur ?
 #print(img)
 temp=[]
@@ -438,7 +440,7 @@ for j in range(len(taks)):
 
 affiche_decomposition(gril_to_compo(img2))
 print(gti(img3))
-print(mult_comb([1,2, 3]))
+#print(mult_comb([1,2, 3]))
 
 
 
