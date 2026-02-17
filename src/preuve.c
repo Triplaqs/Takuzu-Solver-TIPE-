@@ -1,5 +1,5 @@
-#include "include/preuve.h"
-#include "include/takuzu.h"
+#include "../include/preuve.h"
+#include "../include/takuzu.h"
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>

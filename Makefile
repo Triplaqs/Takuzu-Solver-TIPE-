@@ -7,7 +7,8 @@ TARGET = preuve
 
 # Fichiers sources
 SRCS = src/preuve.c src/takuzu.c
-OBJS = $(SRCS:.c=.o)
+OBJS = $(subst src/,out/,$(SRCS:.c=.o))
+#OBJS = $(SRCS:.c=.o)
 
 # Headers
 HEADERS = include/preuve.h include/takuzu.h
@@ -20,7 +21,7 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Compilation des .c en .o
-%.o: %.c $(HEADERS)
+out/%.o: src/%.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Nettoyage

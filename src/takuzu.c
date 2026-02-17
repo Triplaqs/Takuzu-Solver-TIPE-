@@ -1,4 +1,4 @@
-#include "include/takuzu.h"
+#include "../include/takuzu.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -857,6 +857,47 @@ bool resolution_pratique(int ** grille, int n){
     resolve(grille, n);
     bool res = reso_exhaust_preuve_temps(grille, n);
     return res;
+}
+
+ 
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
+//========================================= WEB ===============================================
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//Faisons une fonction qui est compatible web pour Emscripten
+
+#include <emscripten/emscripten.h>
+
+// Cette fonction sera appelée par le Javascript
+// Elle prend un pointeur vers un tableau plat (flat_grid) et la taille n
+EMSCRIPTEN_KEEPALIVE
+int solve_wrapper(int* flat_grid, int n) {
+    // 1. Allocation de la structure int** nécessaire pour tes fonctions
+    int** grille = (int**)malloc(n * sizeof(int*));
+    for(int i = 0; i < n; i++) {
+        grille[i] = (int*)malloc(n * sizeof(int));
+        for(int j = 0; j < n; j++) {
+            // Conversion index 1D (i*n + j) vers 2D [i][j]
+            grille[i][j] = flat_grid[i * n + j];
+        }
+    }
+
+    // 2. Appel de ta fonction de résolution
+    // J'utilise resolution_pratique car elle inclut le timer de sécurité
+    bool success = resolution_pratique(grille, n);
+
+    // 3. Recopie des résultats vers le tableau plat pour JS
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < n; j++) {
+            flat_grid[i * n + j] = grille[i][j];
+        }
+        // Nettoyage mémoire C
+        free(grille[i]);
+    }
+    free(grille);
+
+    // Retourne 1 si succès, 0 sinon
+    return success ? 1 : 0;
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++chap
